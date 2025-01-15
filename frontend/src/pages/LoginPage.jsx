@@ -1,24 +1,30 @@
 import React, { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from 'axios';
+import { useDispatch } from "react-redux";
+import {setLogin} from '../redux/slice/userSlice.jsx'
+
 
 const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  
+  const dispatch = useDispatch();
   const navigate = useNavigate()
-  console.log(email);
-  console.log(password);
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     try {
       const response = await axios.post("http://localhost:3000/api/auth/login", {email, password });
-
-      console.log(response)
-
+      const {user,token} = response.data;
+      console.log("this is the user",user._doc)
+      console.log("this is the token",token)
+      if(response)
+      {
+        dispatch(setLogin({user:user._doc,token,}))
         navigate("/")
+      }
+      
       }
       catch (error) {
         console.log(error.response?.data?.message || error.message);
