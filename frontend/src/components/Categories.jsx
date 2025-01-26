@@ -12,7 +12,7 @@ const Categories = () => {
                     <Link key={index} to={`/listings/category/${category.label}`}>
                         <div className='relative flex justify-center items-center w-[200px] h-[150px] curson-pointer'>
                             <img className='absolute w-full h-full object-cover' src={category.img} alt={category.label}/>{category.label}
-                            <div className='absolute w-full h-full bg-black bg-opacity-30'>
+                            <div className='absolute w-full h-full bg-white bg-opacity-25'>
                                 <div className='text-5xl'>{category.icon}</div>
                                 <p className='font-semibold'>{category.label}</p>
                             </div>
