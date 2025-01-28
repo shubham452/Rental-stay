@@ -18,10 +18,6 @@ const listingSchema = new mongoose.Schema(
             type:String,
             required:true,
         },
-        category:{
-            type:String,
-            required:true,
-        },
         city:{
             type:String,
             required:true,
@@ -64,7 +60,7 @@ const listingSchema = new mongoose.Schema(
             required:true,
         },
     },
-    {timestamp:true}
+    {timestamps:true}
 )
 
 const Listing = mongoose.model("Listing",listingSchema);

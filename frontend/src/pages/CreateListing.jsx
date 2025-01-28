@@ -3,6 +3,9 @@ import { types, facilities, categories } from "../data.jsx";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
 import { IoIosImages } from "react-icons/io";
 import { BiTrash } from "react-icons/bi";
+import axios from "axios";
+import {useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom"
 
 const CreateListing = () => {
     const [category, setCategory] = useState("");
@@ -59,6 +62,54 @@ const CreateListing = () => {
         prevPhotos.filter((_, index) => index !== indexToRemove)
         );
     };
+
+    const creatorId = useSelector((state)=> state?.user?.user?._id)
+
+    const navigate = useNavigate();
+
+    const handleSubmit=async(e)=>{
+        e.preventDefault();
+
+        try {
+            
+            const listingForm = new FormData()
+
+            listingForm.append("creator", creatorId)
+            listingForm.append("category", category)
+            listingForm.append("type", type)
+            listingForm.append("streetAddress", formLocation.streetAddress)
+            listingForm.append("aptSuite", formLocation.aptSuite)
+            listingForm.append("city", formLocation.city)
+            listingForm.append("state", formLocation.state)
+            listingForm.append("country", formLocation.country)
+            listingForm.append("guestCount", guestCount)
+            listingForm.append("bedroomCount", bedroomCount)
+            listingForm.append("bedCount", bedCount)
+            listingForm.append("bathroomCount", bathroomCount)
+            listingForm.append("amenities", amenities)
+            listingForm.append("title", formDescription.title)
+            listingForm.append("description", formDescription.description)
+            listingForm.append("price", formDescription.price)
+
+            photos.forEach((photo)=>{
+                listingForm.append("listingPhotos",photo);
+            })
+
+            const res = await axios.post(
+                "http://localhost:3000/api/listing/create",
+                listingForm,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+
+            if(res.status === 200 || res.status === 201)
+            {
+                console.log("Data created successfully")
+                navigate('/')
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     return (
         <div className="max-w-5xl mx-auto p-6 space-y-8">
         {/* Details */}
@@ -66,7 +117,7 @@ const CreateListing = () => {
             <h1 className="text-4xl font-bold text-gray-800">Create Your Listing</h1>
             <p className="text-gray-500 mt-2">Enter the details to get started</p>
         </div>
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Title */}
             <div>
             <label className="block text-gray-700 font-medium mb-1">Title</label>
@@ -108,22 +159,23 @@ const CreateListing = () => {
             />
             </div>
             {/* Category */}
+
             <div>
             <h2 className="text-xl font-bold text-gray-800 mb-2">
                 Select the Category
             </h2>
             <div className="grid grid-cols-3 gap-4">
-                {categories.map((category, index) => (
-                <div
-                    key={index}
-                    className={`cursor-pointer border rounded-lg p-3 text-center hover:bg-blue-100 ${
-                    category.label === category ? "bg-blue-100" : ""
-                    }`}
-                    onClick={() => handleCategory(category.label)}
-                >
-                    <div className="text-2xl mb-2">{category.icon}</div>
-                    <div className="text-gray-700">{category.label}</div>
-                </div>
+            {categories.map((item, index) => (
+            <div
+                key={index}
+                onClick={() => handleCategory(item.label)}
+                className={`cursor-pointer border rounded-lg p-3 text-center ${
+                    category === item.label ? "bg-blue-200" : ""
+                } hover:bg-blue-100`}
+            >
+            <div className="text-2xl mb-2">{item.icon}</div>
+            <div className="text-gray-700">{item.label}</div>
+        </div>
                 ))}
             </div>
             </div>
@@ -133,19 +185,20 @@ const CreateListing = () => {
                 Enter the Type of Accommodation
             </h2>
             <div className="grid grid-cols-3 gap-4">
-                {types?.map((type, index) => (
-                <div
-                    key={index}
-                    onClick={() => setType(type.name)}
-                    className={`cursor-pointer border rounded-lg p-3 hover:bg-blue-100 ${
-                    type.name === type ? "bg-blue-100" : ""
-                    }`}
-                >
-                    <div className="text-2xl mb-2">{type.icon}</div>
-                    <div className="font-bold text-gray-700">{type.name}</div>
-                    <div className="text-gray-500">{type.description}</div>
-                </div>
-                ))}
+            {types?.map((item, index) => (
+            <div
+                key={index}
+                onClick={() => setType(item.name)}
+                className={`cursor-pointer border rounded-lg p-3 hover:bg-blue-100 ${
+                    type === item.name ? "bg-blue-200" : ""
+                }`}
+            >
+                <div className="text-2xl mb-2">{item.icon}</div>
+                <div className="font-bold text-gray-700">{item.name}</div>
+                <div className="text-gray-500">{item.description}</div>
+            </div>
+            ))}
+
             </div>
             </div>
             {/* Address */}
